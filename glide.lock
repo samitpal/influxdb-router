@@ -1,0 +1,21 @@
+hash: fba3ff13d79a9647a2d5c4e363c6f08a27c1bc7fff0bfce4d5f9d87b759c1063
+updated: 2018-02-07T15:20:54.694733092+05:30
+imports:
+- name: github.com/BurntSushi/toml
+  version: b26d9c308763d68093482582cea63d69be07a0f0
+- name: github.com/jamiealquiza/envy
+  version: 0bbd0e6a316f4aedb2fcb3eaaabd3e89d88d606f
+- name: github.com/rs/xid
+  version: 390d6a8eeb3caeef8befccd1f9fae78eee5a0b34
+- name: github.com/Sirupsen/logrus
+  version: d682213848ed68c0a260ca37d6dd5ace8423f5ba
+- name: golang.org/x/crypto
+  version: d9133f5469342136e669e85192a26056b587f503
+  subpackages:
+  - ssh/terminal
+- name: golang.org/x/sys
+  version: 37707fdb30a5b38865cfb95e5aab41707daec7fd
+  subpackages:
+  - unix
+  - windows
+testImports: []

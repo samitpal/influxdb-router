@@ -1,0 +1,26 @@
+[[customers]]
+  name = "servicex"
+  email = "user1@email.com"
+  # api key should not have !, *, or - character.
+  api_key = "7ba4e75a"
+  influx_db_name = "telegraf1"
+  outgoing_queue_cap = 7000
+  retry_queue_cap = 10
+  influx_hosts = ["http://127.0.0.1:9086", "http://127.0.0.1:8086"]
+  # The auth section needs to come at the end. This should be populated only if you enabled auth in influx-router
+  # and set auth-mode to 'from-config'
+  [customers.auth]
+      username = "user1"
+      password = "password1"
+
+[[customers]]
+  name = "servicey"
+  email = "user2@email.com"
+  # api key should not have !, *, or - character.
+  api_key = "97dafb09"
+  influx_db_name = "telegraf2"
+  outgoing_queue_cap = 5000
+  influx_hosts = ["http://127.0.0.1:8086", "http://1.2.3.4:8086"]
+  [customers.auth]
+      username = "user2"
+      password = "password2"

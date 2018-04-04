@@ -1,0 +1,8 @@
+package: github.com/samitpal/influx-router
+import:
+- package: github.com/BurntSushi/toml
+  version: ~0.3.0
+- package: github.com/Sirupsen/logrus
+  version: ~1.0.4
+- package: github.com/jamiealquiza/envy
+  version: ~1.0.0
