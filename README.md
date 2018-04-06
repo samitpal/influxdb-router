@@ -1,8 +1,22 @@
 # NOT PRODUCTION READY YET.
-### Metric flow with influx-router
+##### Metric flow with influx-router
 ![alt text](images/influx-router.png "Metric flow with influx-router")
 
-### Influx-router Usage
+Installation
+-------------------
+##### To build from source follow the steps below: 
+
+```sh
+$ Install glide from http://glide.sh/.
+
+$ go get -u github.com/samitpal/influxdb-router/...
+
+$ glide install
+
+$ go install
+```
+
+##### Influx-router Usage
 ```
 Usage of influx-router:
   -api-key-header-name string
