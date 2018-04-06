@@ -7,7 +7,7 @@ Installation
 ##### To build from source follow the steps below: 
 
 ```sh
-$ Install glide from http://glide.sh/.
+Install glide from http://glide.sh/.
 
 $ go get -u github.com/samitpal/influxdb-router/...
 
