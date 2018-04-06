@@ -1,5 +1,5 @@
 # NOT PRODUCTION READY YET.
-##### Metric flow with influxdb-router
+### Metric flow with influxdb-router
 ![alt text](images/influx-router.png "Metric flow with influx-router")
 
 Installation
@@ -16,7 +16,7 @@ $ glide install
 $ go install
 ```
 
-##### Influxdb-router Usage
+### Influxdb-router Usage
 ```
 Usage of influxdb-router:
   -api-key-header-name string
