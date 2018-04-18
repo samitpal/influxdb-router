@@ -65,11 +65,11 @@ var (
 func init() {
 	flag.BoolVar(&options.authEnabled, "auth-enabled", false, "Whether to enable authentication when communicating with InfluxDB")
 	flag.StringVar(&options.authMode, "auth-mode", "from-config", "Can be either 'from-config or 'from-env' presently. 'auth-enabled' flag needs to be turned on.")
-	flag.StringVar(&options.addr, "listen-addr", "0.0.0.0", "Influx proxy listen address")
-	flag.StringVar(&options.httpPort, "listen-http-port", "80", "Influx proxy listen port (http)")
-	flag.StringVar(&options.apiAddr, "api-listen-addr", "127.0.0.1", "Influx proxy api listen address")
-	flag.StringVar(&options.apiPort, "api-listen-http-port", "8080", "Influx proxy api listen port")
-	flag.StringVar(&options.httpsPort, "listen-https-port", "443", "Influx proxy listen port (https)")
+	flag.StringVar(&options.addr, "listen-addr", "0.0.0.0", "InfluxDB router listen address")
+	flag.StringVar(&options.httpPort, "listen-http-port", "80", "InfluxDB router listen port (http)")
+	flag.StringVar(&options.apiAddr, "api-listen-addr", "127.0.0.1", "InfluxDB router api listen address")
+	flag.StringVar(&options.apiPort, "api-listen-http-port", "8080", "InfluxDB router api listen port")
+	flag.StringVar(&options.httpsPort, "listen-https-port", "443", "InfluxDB router listen port (https)")
 	flag.IntVar(&options.incomingQueuecap, "incoming-queue-cap", 500000, "In-flight incoming message queue capacity")
 	flag.StringVar(&options.sslCert, "ssl-cert", "", "TLS Certificate")
 	flag.StringVar(&options.sslKey, "ssl-key", "", "TLS Key")
@@ -99,9 +99,10 @@ func handleSignals(h chan bool) {
 func main() {
 
 	log.Info(`
-          _
-°   _   _|_  |             ,_   _        |_   _   ,_
-|  | |   |   |  (_)  ><    |   (_)  (_)  |_  (/_  |
+    ____     _____           ___  ___     ___            __
+   /  _/__  / _/ /_ ____ __ / _ \/ _ )   / _ \___  __ __/ /____ ____
+  _/ // _ \/ _/ / // /\ \ // // / _  |  / , _/ _ \/ // / __/ -_) __/
+ /___/_//_/_//_/\_,_//_\_\/____/____/  /_/|_|\___/\_,_/\__/\__/_/
 `)
 
 	ready := make(chan bool, 1)

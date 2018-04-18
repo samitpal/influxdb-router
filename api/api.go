@@ -53,7 +53,7 @@ func HTTPListener(conf *HTTPListenerConfig) {
 	h = httpHandlers(h, conf)
 
 	go func() {
-		log.Infof("HTTP Rest API Service listening on %s:%s\n", conf.Addr, conf.Port)
+		log.Infof("InfluxDB Router http rest API service listening on %s:%s\n", conf.Addr, conf.Port)
 		err := http.ListenAndServe(conf.Addr+":"+conf.Port, h)
 		if err != nil {
 			log.Fatalf("ListenAndServe: %s\n", err)

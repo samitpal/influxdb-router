@@ -104,7 +104,7 @@ func HTTPListener(config *HTTPListenerConfig) {
 	httpsPort := config.HTTPSPort
 	if config.SSLCert != "" && config.SSLKey != "" {
 		go func() {
-			log.Infof("Influx Router listening on https %s:%s\n", config.Addr, httpsPort)
+			log.Infof("InfluxDB Router listening on https %s:%s\n", config.Addr, httpsPort)
 			err := http.ListenAndServeTLS(config.Addr+":"+httpsPort, config.SSLCert, config.SSLKey, h)
 			if err != nil {
 				log.Fatalf("ListenAndServe: %s\n", err)
@@ -115,7 +115,7 @@ func HTTPListener(config *HTTPListenerConfig) {
 
 	httpPort := config.HTTPPort
 	go func() {
-		log.Infof("Influx Router listening on http %s:%s\n", config.Addr, httpPort)
+		log.Infof("InfluxDB Router listening on http %s:%s\n", config.Addr, httpPort)
 		err := http.ListenAndServe(config.Addr+":"+httpPort, h)
 		if err != nil {
 			log.Fatalf("ListenAndServe: %s\n", err)
