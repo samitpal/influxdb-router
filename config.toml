@@ -1,16 +1,23 @@
 [[customers]]
   name = "servicex"
   email = "user1@email.com"
-  # api key should not have !, *, or - character.
+  # api key should not have !, *, or - character. This is the value of the telegraf header (default header name is 'Service-API-Key')
   api_key = "7ba4e75a"
+  # Name of the influxdb database where the metrics for this customer should be stored.
   influx_db_name = "telegraf1"
+  # Max number of batches that will be kept in-memory for each of the 'influx_hosts'. Beyind that batches with be dropped
   outgoing_queue_cap = 7000
+  # Influxdb-routed maintains a retry queue for batches that it fails to send to InfluxDB backends.
+  # retry_queue_cap is the max number of batches that can be kept in the retry queue (in-memory).
   retry_queue_cap = 10
+  # list of InfluxDB hosts.
   influx_hosts = ["http://127.0.0.1:9086", "http://127.0.0.1:8086"]
   # The auth section needs to come at the end. This should be populated only if you enabled auth in influx-router
   # and set auth-mode to 'from-config'
   [customers.auth]
+      # influxdb user
       username = "user1"
+      # influxdb password for user user1
       password = "password1"
 
 [[customers]]
