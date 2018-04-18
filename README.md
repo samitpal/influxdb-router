@@ -1,5 +1,5 @@
 # NOT PRODUCTION READY YET.
-### Metric flow with influxdb-router
+### Metric flow with influxdb-router (Typical use case)
 ![alt text](images/influx-router.png "Metric flow with influx-router")
 
 Installation
@@ -20,7 +20,7 @@ $ go install
 ```
 With the config in config.toml (containing the InfluxDB creds) and with InfluxDB authentication enabled in the backends
 
-$ ./influxdb-router -auth-enabled -auth-mode from-config -config_file config.toml -api-listen-http-port 8090 -listen-http-port 8080
+$./influxdb-router -auth-enabled -auth-mode from-config -config_file config.toml -api-listen-http-port 8090 -listen-http-port 8080
 
 With the config in config.toml (without the InfluxDB creds) and with InfluxDB authentication enabled in the backends, you can set the creds in environment in the following format
 
