@@ -1,4 +1,4 @@
-package: github.com/samitpal/influx-router
+package: github.com/samitpal/influxdb-router
 import:
 - package: github.com/BurntSushi/toml
   version: ~0.3.0
