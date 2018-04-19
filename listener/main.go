@@ -174,6 +174,9 @@ func ingest(w http.ResponseWriter, req *http.Request, httpConfig *HTTPListenerCo
 		return
 	}
 
+	// batch (compressed) size counter metric by api key
+	go httpConfig.Statsd.SendStatsdCounterMetric(fmt.Sprintf("influx_router.%s.batch-size-bytes", strings.Replace(requestKey, "-", "_", -1)), len(buf))
+
 	p := backends.Payload{MessageID: messageID, Body: buf, APIKey: requestKey}
 	select {
 	case httpConfig.IncomingQueue <- &p: // Put the batch into the channel unless it is full
