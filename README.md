@@ -4,6 +4,9 @@
 
 Installation
 -------------------
+##### To install the binary:
+Go to the releases page and select the appropriate binary for your platform.
+
 ##### To build from source follow the steps below: 
 
 ```sh
