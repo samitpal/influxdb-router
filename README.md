@@ -59,6 +59,6 @@ $ ./influxdb-router -auth-enabled -auth-mode from-env -config_file config.toml -
       password = "password1"
 ```
 
-### Example telegraf configuration
+### Example client side config (telegraf configuration)
 ![alt text](images/telegraf.png "Telegraf configuration")
 
