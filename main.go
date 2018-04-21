@@ -49,8 +49,11 @@ var (
 		httpPort           string
 		httpsPort          string
 		incomingQueuecap   int
-		sslCert            string
-		sslKey             string
+		secure             bool
+		sslServerCert      string
+		sslCAServerCert    string
+		sslServerKey       string
+		sslClientCertAuth  bool
 		configFile         string
 		apiKeyHeaderName   string
 		waitBeforeShutdown int
@@ -71,9 +74,12 @@ func init() {
 	flag.StringVar(&options.apiPort, "api-listen-http-port", "8080", "InfluxDB router api listen port")
 	flag.StringVar(&options.httpsPort, "listen-https-port", "443", "InfluxDB router listen port (https)")
 	flag.IntVar(&options.incomingQueuecap, "incoming-queue-cap", 500000, "In-flight incoming message queue capacity")
-	flag.StringVar(&options.sslCert, "ssl-cert", "", "TLS Certificate")
-	flag.StringVar(&options.sslKey, "ssl-key", "", "TLS Key")
-	flag.StringVar(&options.configFile, "config_file", "config.toml", "Configuration options.")
+	flag.BoolVar(&options.secure, "secure", false, "Whether to turn on ssl.")
+	flag.StringVar(&options.sslCAServerCert, "ssl-ca-server-cert", "", "CA Server TLS Certificate. Useful when client cert based auth is enabled.")
+	flag.StringVar(&options.sslServerCert, "ssl-server-cert", "./server.crt", "Server TLS Certificate")
+	flag.StringVar(&options.sslServerKey, "ssl-server-key", "./server.key", "Server TLS Key")
+	flag.BoolVar(&options.sslClientCertAuth, "ssl-client-cert-auth", false, "Whether to turn on ssl client certificate based auth")
+	flag.StringVar(&options.configFile, "config_file", "./config.toml", "Configuration options.")
 	flag.StringVar(&options.apiKeyHeaderName, "api-key-header-name", "Service-API-Key", "Name of the API key header.")
 	flag.IntVar(&options.waitBeforeShutdown, "wait-before-shutdown", 1, "Number of seconds to wait before the process shuts down. Health checks will be failed during this time.")
 	flag.StringVar(&options.statsdServer, "statsd-server", "localhost:8125", "statsd server:port for sending metrics")
@@ -145,16 +151,19 @@ func main() {
 
 	// HTTP Listener.
 	go listener.HTTPListener(&listener.HTTPListenerConfig{
-		Addr:             options.addr,
-		HTTPPort:         options.httpPort,
-		HTTPSPort:        options.httpsPort,
-		IncomingQueue:    incomingQueue,
-		SSLCert:          options.sslCert,
-		SSLKey:           options.sslKey,
-		APIConfig:        apiConf,
-		APIKeyHeaderName: options.apiKeyHeaderName,
-		HealthCheck:      healthCheck,
-		Statsd:           &sc,
+		Addr:              options.addr,
+		HTTPPort:          options.httpPort,
+		HTTPSPort:         options.httpsPort,
+		IncomingQueue:     incomingQueue,
+		Secure:            options.secure,
+		SSLCAServerCert:   options.sslCAServerCert,
+		SSLServerCert:     options.sslServerCert,
+		SSLServerKey:      options.sslServerKey,
+		SSLClientCertAuth: options.sslClientCertAuth,
+		APIConfig:         apiConf,
+		APIKeyHeaderName:  options.apiKeyHeaderName,
+		HealthCheck:       healthCheck,
+		Statsd:            &sc,
 	})
 
 	// API listener.

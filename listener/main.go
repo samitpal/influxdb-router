@@ -24,6 +24,8 @@ package listener
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -46,16 +48,19 @@ var log = logging.For("listener")
 
 // HTTPListenerConfig holds configs for the http daemon
 type HTTPListenerConfig struct {
-	Addr             string
-	HTTPPort         string
-	HTTPSPort        string
-	IncomingQueue    chan *backends.Payload
-	SSLCert          string
-	SSLKey           string
-	APIKeyHeaderName string
-	APIConfig        config.APIKeyMap
-	HealthCheck      chan bool
-	Statsd           *stats.Statsd
+	Addr              string
+	HTTPPort          string
+	HTTPSPort         string
+	IncomingQueue     chan *backends.Payload
+	Secure            bool
+	SSLCAServerCert   string
+	SSLServerCert     string
+	SSLServerKey      string
+	SSLClientCertAuth bool
+	APIKeyHeaderName  string
+	APIConfig         config.APIKeyMap
+	HealthCheck       chan bool
+	Statsd            *stats.Statsd
 }
 
 // httpHandlers has all the routes defined.
@@ -101,26 +106,48 @@ func HTTPListener(config *HTTPListenerConfig) {
 	h := http.NewServeMux()
 	h = httpHandlers(h, config)
 
-	httpsPort := config.HTTPSPort
-	if config.SSLCert != "" && config.SSLKey != "" {
+	//Run in https mode
+	if config.Secure {
+		httpsPort := config.HTTPSPort
+		cfg := &tls.Config{}
+
+		if config.SSLCAServerCert != "" {
+			caCert, err := ioutil.ReadFile(config.SSLCAServerCert)
+			if err != nil {
+				log.Fatal(err)
+			}
+			caCertPool := x509.NewCertPool()
+			caCertPool.AppendCertsFromPEM(caCert)
+			cfg.ClientCAs = caCertPool
+		}
+
+		// if ssl client cert authentication is enabled.
+		if config.SSLClientCertAuth {
+			cfg.ClientAuth = tls.RequireAndVerifyClientCert
+		}
+		srv := &http.Server{
+			Addr:      config.Addr + ":" + httpsPort,
+			Handler:   h,
+			TLSConfig: cfg,
+		}
 		go func() {
 			log.Infof("InfluxDB Router listening on https %s:%s\n", config.Addr, httpsPort)
-			err := http.ListenAndServeTLS(config.Addr+":"+httpsPort, config.SSLCert, config.SSLKey, h)
+			err := srv.ListenAndServeTLS(config.SSLServerCert, config.SSLServerKey)
+			if err != nil {
+				log.Fatalf("ListenAndServeTLS: %s\n", err)
+			}
+		}()
+		//Run in http mode
+	} else {
+		httpPort := config.HTTPPort
+		go func() {
+			log.Infof("InfluxDB Router listening on http %s:%s\n", config.Addr, httpPort)
+			err := http.ListenAndServe(config.Addr+":"+httpPort, h)
 			if err != nil {
 				log.Fatalf("ListenAndServe: %s\n", err)
 			}
 		}()
-
 	}
-
-	httpPort := config.HTTPPort
-	go func() {
-		log.Infof("InfluxDB Router listening on http %s:%s\n", config.Addr, httpPort)
-		err := http.ListenAndServe(config.Addr+":"+httpPort, h)
-		if err != nil {
-			log.Fatalf("ListenAndServe: %s\n", err)
-		}
-	}()
 }
 
 // ingest is a handler that accepts a batch of compressed data points.
@@ -144,7 +171,6 @@ func ingest(w http.ResponseWriter, req *http.Request, httpConfig *HTTPListenerCo
 	if !valid {
 		log.Infof("[client %s, api-key: %s] Not a valid api key\n",
 			client, requestKey)
-
 		req.Close = true
 		w.WriteHeader(http.StatusUnauthorized)
 		return

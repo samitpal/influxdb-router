@@ -19,23 +19,9 @@ $ glide install
 $ go install
 ```
 
-### Influxdb-router Usage
-```
-With the config in config.toml (containing the InfluxDB creds) and with InfluxDB authentication enabled in the backends
-
-$./influxdb-router -auth-enabled -auth-mode from-config -config_file config.toml -api-listen-http-port 8090 -listen-http-port 8080
-
-With the config in config.toml (without the InfluxDB creds) and with InfluxDB authentication enabled in the backends, you can set the creds in environment in the following format
-
-$ export username_<api_key> = "user1"
-$ export password_<api_key> = "password1"
-
-and then
-
-$ ./influxdb-router -auth-enabled -auth-mode from-env -config_file config.toml -api-listen-http-port 8090 -listen-http-port 8080
-```
 ### Sample config.toml
 ```
+# You can configure multiple customers.
 [[customers]]
   name = "servicex"
   email = "user1@email.com"
@@ -57,6 +43,38 @@ $ ./influxdb-router -auth-enabled -auth-mode from-env -config_file config.toml -
       username = "user1"
       # influxdb password for user user1
       password = "password1"
+```
+
+### Influxdb-router Usage
+1. **Without InfluxDB authentication enabled.**
+```
+$./influxdb-router -config_file config.toml -api-listen-http-port 8090 -listen-http-port 8080
+```
+
+2. **With the InfluxDB creds in config.toml and with InfluxDB authentication enabled in the backends.**
+```
+$./influxdb-router -auth-enabled -auth-mode from-config -config_file config.toml -api-listen-http-port 8090 -listen-http-port 8080
+```
+
+3. **config.toml without the InfluxDB creds but in env and with InfluxDB authentication enabled in the backends. You can set the creds in environment in the following format.**
+
+```
+$ export username_<api_key> = "user1"
+$ export password_<api_key> = "password1"
+
+
+$ ./influxdb-router -auth-enabled -auth-mode from-env -config_file config.toml -api-listen-http-port 8090 -listen-http-port 8080
+```
+
+4. **With SSL**
+
+```
+$ ./influxdb-router -secure -config_file co nfig.toml -api-listen-http-port 8090 -listen-https-port 8080 -ssl-server-cert <path to server cert> -ssl-server-key <path to server key>
+```
+5. **With SSL and with ssl client cert authentication enabled (telegraf needs to be configured with client certs)**
+
+```
+$ ./influxdb-router -secure -ssl-client-cert-auth -config_file config.toml -api-listen-http-port 8090 -listen-https-port 8080 -ssl-ca-server-cert <path to CA cert> -ssl-server-cert <path to server cert> -ssl-server-key <path to server key>
 ```
 
 ### Example client side config (telegraf configuration)
