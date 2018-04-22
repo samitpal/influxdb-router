@@ -12,7 +12,7 @@ Go to the releases page and select the appropriate binary for your platform.
 ```sh
 Install glide from http://glide.sh/.
 
-$ go get -u github.com/samitpal/influxdb-router/...
+$ go get github.com/samitpal/influxdb-router/...
 
 $ glide install
 
