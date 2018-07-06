@@ -1,4 +1,3 @@
-# NOT PRODUCTION READY YET.
 ### Metric flow with influxdb-router (Typical use case)
 ![alt text](images/influx-router.png "Metric flow with influx-router")
 
