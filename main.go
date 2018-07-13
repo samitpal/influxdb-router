@@ -23,6 +23,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -59,10 +60,13 @@ var (
 		waitBeforeShutdown int
 		statsdServer       string
 		statsInterval      int
+		version            bool
 	}
 
 	sigChan = make(chan os.Signal)
 	log     = logging.For("main")
+	Version   string
+	BuildTime string
 )
 
 func init() {
@@ -84,6 +88,7 @@ func init() {
 	flag.IntVar(&options.waitBeforeShutdown, "wait-before-shutdown", 1, "Number of seconds to wait before the process shuts down. Health checks will be failed during this time.")
 	flag.StringVar(&options.statsdServer, "statsd-server", "localhost:8125", "statsd server:port for sending metrics")
 	flag.IntVar(&options.statsInterval, "stats-interval", 30, "Interval in seconds for sending statsd metrics.")
+  flag.BoolVar(&options.version, "version", false, "version of the binary.")
 
 	envy.Parse("INFLUX")
 	flag.Parse()
@@ -102,7 +107,17 @@ func handleSignals(h chan bool) {
 	os.Exit(0)
 }
 
+func displayVersion() {
+	fmt.Println("Version: ", Version)
+	fmt.Println("Build Time: ", BuildTime)
+	os.Exit(0)
+}
+
 func main() {
+
+	if options.version {
+		displayVersion()
+	}
 
 	log.Info(`
     ____     _____           ___  ___     ___            __

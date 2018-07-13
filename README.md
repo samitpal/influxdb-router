@@ -16,7 +16,11 @@ $ go get github.com/samitpal/influxdb-router/...
 
 $ glide install
 
-$ go install
+Switch to the git tag, e.g if you want to build version 1.0
+
+$ git checkout 1.0
+
+$ make influxdb-router
 ```
 
 ### Sample config.toml
