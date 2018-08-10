@@ -139,3 +139,13 @@ func TestNewAPIKeyMap(t *testing.T) {
 		}
 	}
 }
+
+func TestMask(t *testing.T) {
+	s := "Hello World"
+	mString := "*******orld"
+
+	m := Mask(s, 4)
+	if m != mString {
+		t.Errorf("Returned masked String does not match. Got: %s, Expected: %s", m, mString)
+	}
+}
