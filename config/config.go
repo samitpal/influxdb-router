@@ -29,8 +29,8 @@ import (
 	"io"
 	"net/url"
 
-	"github.com/samitpal/influxdb-router/backends"
 	"github.com/BurntSushi/toml"
+	"github.com/samitpal/influxdb-router/backends"
 )
 
 type errMandatoryField struct {
@@ -94,13 +94,15 @@ InfluxHosts = %s
 InfluxDB = %v
 OutgoingQueueCap = %v
 RetryQueueCap = %v
-Auth = %v`,
-			*r.APIKey,
+Auth.UserName = %v
+Auth.Password = %v`,
+			Mask(*r.APIKey, 4),
 			*r.InfluxHosts,
 			*r.InfluxDBName,
 			*r.OutgoingQueueCap,
 			*r.RetryQueueCap,
-			*r.Auth))
+			r.Auth.UserName,
+			Mask(r.Auth.Password, 4)))
 		buff.WriteString("\n-----------------------\n")
 	}
 	buff.WriteString("==========================\n")
@@ -132,10 +134,8 @@ func (c *Configs) checkConfig() (*Configs, error) {
 			v.RetryQueueCap = &r
 		}
 		if v.Auth == nil {
-			user := ""
-			password := ""
-			v.Auth.UserName = user
-			v.Auth.Password = password
+			a := Authentication{}
+			v.Auth = &a
 		}
 		mroutes = append(mroutes, v)
 	}
@@ -204,4 +204,13 @@ func genBackends(hosts []string, outgoingQueueCap int, retryQueueCap int) map[st
 		bs[hs] = b
 	}
 	return bs
+}
+
+// Mask masks the first len(s)-n characters.
+func Mask(s string, n int) string {
+	b := []byte(s)
+	for i := 0; i < len(s)-n; i++ {
+		b[i] = '*'
+	}
+	return string(b)
 }

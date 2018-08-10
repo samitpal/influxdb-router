@@ -33,11 +33,11 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/rs/xid"
 	"github.com/samitpal/influxdb-router/backends"
 	"github.com/samitpal/influxdb-router/config"
 	"github.com/samitpal/influxdb-router/logging"
 	"github.com/samitpal/influxdb-router/stats"
-	"github.com/rs/xid"
 )
 
 type messageContext string
@@ -94,7 +94,7 @@ func logHTTPRequest(next http.Handler) http.Handler {
 		mid := xid.New()
 		ctx := context.WithValue(req.Context(), messageContextKey, mid.String())
 
-		log.Printf("Received message-id: %s, remote-host: %s, uri: %s, http-method: %s, api-key: %s, http-proto: %s, user-agent: %s", mid, host, request, method, apiKey, proto, userAgent)
+		log.Printf("Received message-id: %s, remote-host: %s, uri: %s, http-method: %s, api-key: %s, http-proto: %s, user-agent: %s", mid, host, request, method, config.Mask(apiKey, 4), proto, userAgent)
 		next.ServeHTTP(w, req.WithContext(ctx))
 	})
 }
