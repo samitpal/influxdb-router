@@ -156,7 +156,7 @@ func ingest(w http.ResponseWriter, req *http.Request, httpConfig *HTTPListenerCo
 
 	// Validate key on every batch.
 	// May or may not be a good idea.
-	requestKey := req.Header.Get(httpConfig.APIKeyHeaderName)
+	apiKey := req.Header.Get(httpConfig.APIKeyHeaderName)
 
 	var client string
 	xff := req.Header.Get("x-forwarded-for")
@@ -167,10 +167,10 @@ func ingest(w http.ResponseWriter, req *http.Request, httpConfig *HTTPListenerCo
 	}
 
 	// Check if the api key that the request came with is valid.
-	_, valid := httpConfig.APIConfig[requestKey]
+	_, valid := httpConfig.APIConfig[apiKey]
 	if !valid {
 		log.Infof("[client %s, api-key: %s] Not a valid api key\n",
-			client, requestKey)
+			client, apiKey)
 		req.Close = true
 		w.WriteHeader(http.StatusUnauthorized)
 		return
@@ -192,7 +192,7 @@ func ingest(w http.ResponseWriter, req *http.Request, httpConfig *HTTPListenerCo
 		messageID = ""
 	}
 	// counter metric by api key
-	go httpConfig.Statsd.SendStatsdCounterMetric(fmt.Sprintf("influx_router.%s.hits", strings.Replace(requestKey, "-", "_", -1)), 1)
+	go httpConfig.Statsd.SendStatsdCounterMetric(fmt.Sprintf("influx_router.%s.hits", strings.Replace(apiKey, "-", "_", -1)), 1)
 
 	buf, err := ioutil.ReadAll(req.Body)
 	if err != nil {
@@ -201,16 +201,16 @@ func ingest(w http.ResponseWriter, req *http.Request, httpConfig *HTTPListenerCo
 	}
 
 	// batch (compressed) size counter metric by api key
-	go httpConfig.Statsd.SendStatsdCounterMetric(fmt.Sprintf("influx_router.%s.batch-size-bytes", strings.Replace(requestKey, "-", "_", -1)), len(buf))
+	go httpConfig.Statsd.SendStatsdCounterMetric(fmt.Sprintf("influx_router.%s.batch-size-bytes", strings.Replace(apiKey, "-", "_", -1)), len(buf))
 
-	p := backends.Payload{MessageID: messageID, Body: buf, APIKey: requestKey}
+	p := backends.Payload{MessageID: messageID, Body: buf, APIKey: apiKey}
 	select {
 	case httpConfig.IncomingQueue <- &p: // Put the batch into the channel unless it is full
 		w.WriteHeader(http.StatusNoContent)
 		return
 	default:
 		w.WriteHeader(http.StatusOK)
-		log.Infof("[client-ip: %s, api-key: %s] IncomingQueue Queue full. Discarding batch.", client, requestKey)
+		log.Infof("[client-ip: %s, api-key: %s] IncomingQueue Queue full. Discarding batch.", client, apiKey)
 		return
 	}
 }
