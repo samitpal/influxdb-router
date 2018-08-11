@@ -192,7 +192,7 @@ func ingest(w http.ResponseWriter, req *http.Request, httpConfig *HTTPListenerCo
 		messageID = ""
 	}
 	// counter metric by api key
-	go httpConfig.Statsd.SendStatsdCounterMetric(fmt.Sprintf("influx_router.%s.hits", strings.Replace(apiKey, "-", "_", -1)), 1)
+	go httpConfig.Statsd.SendStatsdCounterMetric(fmt.Sprintf("influx_router.%s.hits", strings.Replace(httpConfig.APIConfig[apiKey].Name, "-", "_", -1)), 1)
 
 	buf, err := ioutil.ReadAll(req.Body)
 	if err != nil {
@@ -201,7 +201,7 @@ func ingest(w http.ResponseWriter, req *http.Request, httpConfig *HTTPListenerCo
 	}
 
 	// batch (compressed) size counter metric by api key
-	go httpConfig.Statsd.SendStatsdCounterMetric(fmt.Sprintf("influx_router.%s.batch-size-bytes", strings.Replace(apiKey, "-", "_", -1)), len(buf))
+	go httpConfig.Statsd.SendStatsdCounterMetric(fmt.Sprintf("influx_router.%s.batch-size-bytes", strings.Replace(httpConfig.APIConfig[apiKey].Name, "-", "_", -1)), len(buf))
 
 	p := backends.Payload{MessageID: messageID, Body: buf, APIKey: apiKey}
 	select {
@@ -210,7 +210,7 @@ func ingest(w http.ResponseWriter, req *http.Request, httpConfig *HTTPListenerCo
 		return
 	default:
 		w.WriteHeader(http.StatusOK)
-		log.Infof("[client-ip: %s, api-key: %s] IncomingQueue Queue full. Discarding batch.", client, apiKey)
+		log.Infof("[client-ip: %s, api-key: %s] IncomingQueue Queue full. Discarding batch.", client, config.Mask(apiKey, 4))
 		return
 	}
 }

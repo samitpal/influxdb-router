@@ -82,18 +82,18 @@ func ExportMetrics(s *Statsd, incomingQueueCap int, incomingQueue chan *backends
 		incomingQueueCap := fmt.Sprintf("influx_router.incoming_queue.limit:%d|g", incomingQueueCap)
 		metrics = append(metrics, incomingQueue, incomingQueueCap)
 
-		for k, v := range ac {
-			api := strings.Replace(k, "-", "_", -1)
+		for _, v := range ac {
+			svcName := strings.Replace(v.Name, "-", "_", -1)
 			for _, vd := range v.Dests {
 				bURL := strings.TrimPrefix(strings.Replace(vd.URL, ".", "_", -1), "http://")
 				//replace the colon chracter also.
 				bURL = strings.Replace(bURL, ":", "_", -1)
 
-				destQueueSize := fmt.Sprintf("influx_router.%s.outgoing_queue.%s.current_size:%d|g", api, bURL, len(vd.Queue))
-				destQueueLimit := fmt.Sprintf("influx_router.%s.outgoing_queue.%s.limit:%d|g", api, bURL, v.OutgoingQueueCap)
+				destQueueSize := fmt.Sprintf("influx_router.%s.outgoing_queue.%s.current_size:%d|g", svcName, bURL, len(vd.Queue))
+				destQueueLimit := fmt.Sprintf("influx_router.%s.outgoing_queue.%s.limit:%d|g", svcName, bURL, v.OutgoingQueueCap)
 
-				destRetryQueueSize := fmt.Sprintf("influx_router.%s.outgoing_retry_queue.%s.current_size:%d|g", api, bURL, len(vd.RetryQueue))
-				destRetryQueueLimit := fmt.Sprintf("influx_router.%s.outgoing_retry_queue.%s.limit:%d|g", api, bURL, v.RetryQueueCap)
+				destRetryQueueSize := fmt.Sprintf("influx_router.%s.outgoing_retry_queue.%s.current_size:%d|g", svcName, bURL, len(vd.RetryQueue))
+				destRetryQueueLimit := fmt.Sprintf("influx_router.%s.outgoing_retry_queue.%s.limit:%d|g", svcName, bURL, v.RetryQueueCap)
 				metrics = append(metrics, destQueueSize, destQueueLimit, destRetryQueueSize, destRetryQueueLimit)
 
 				vd.RLock()
@@ -106,7 +106,7 @@ func ExportMetrics(s *Statsd, incomingQueueCap int, incomingQueue chan *backends
 				} else {
 					ih = 0
 				}
-				backendHealth := fmt.Sprintf("influx_router.%s.backend_health.%s:%d|g", api, bURL, ih)
+				backendHealth := fmt.Sprintf("influx_router.%s.backend_health.%s:%d|g", svcName, bURL, ih)
 				metrics = append(metrics, backendHealth)
 			}
 		}
