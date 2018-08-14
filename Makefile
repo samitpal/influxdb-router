@@ -13,7 +13,7 @@ GOPATH := $(GOPATH)
 all: influxdb-router
 
 influxdb-router:
-	go install  -ldflags="-X main.Version=${INFLUXDB-ROUTER_VERSION} -X main.BuildTime=${BUILDTIME}" ${INFLUXDB-ROUTER_PKG}
+	go install  -ldflags="-X main.version=${INFLUXDB-ROUTER_VERSION} -X main.date=${BUILDTIME}" ${INFLUXDB-ROUTER_PKG}
 
 .PHONY: clean
 

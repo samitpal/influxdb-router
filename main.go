@@ -65,18 +65,19 @@ var (
 
 	sigChan = make(chan os.Signal)
 	log     = logging.For("main")
-	Version   string
-	BuildTime string
+	version string
+	date    string
+	commit  string
 )
 
 func init() {
 	flag.BoolVar(&options.authEnabled, "auth-enabled", false, "Whether to enable authentication when communicating with InfluxDB")
 	flag.StringVar(&options.authMode, "auth-mode", "from-config", "Can be either 'from-config or 'from-env' presently. 'auth-enabled' flag needs to be turned on.")
 	flag.StringVar(&options.addr, "listen-addr", "0.0.0.0", "InfluxDB router listen address")
-	flag.StringVar(&options.httpPort, "listen-http-port", "80", "InfluxDB router listen port (http)")
+	flag.StringVar(&options.httpPort, "listen-http-port", "8090", "InfluxDB router listen port (http)")
 	flag.StringVar(&options.apiAddr, "api-listen-addr", "127.0.0.1", "InfluxDB router api listen address")
 	flag.StringVar(&options.apiPort, "api-listen-http-port", "8080", "InfluxDB router api listen port")
-	flag.StringVar(&options.httpsPort, "listen-https-port", "443", "InfluxDB router listen port (https)")
+	flag.StringVar(&options.httpsPort, "listen-https-port", "8443", "InfluxDB router listen port (https)")
 	flag.IntVar(&options.incomingQueuecap, "incoming-queue-cap", 500000, "In-flight incoming message queue capacity")
 	flag.BoolVar(&options.secure, "secure", false, "Whether to turn on ssl.")
 	flag.StringVar(&options.sslCAServerCert, "ssl-ca-server-cert", "", "CA Server TLS Certificate. Useful when client cert based auth is enabled.")
@@ -88,7 +89,7 @@ func init() {
 	flag.IntVar(&options.waitBeforeShutdown, "wait-before-shutdown", 1, "Number of seconds to wait before the process shuts down. Health checks will be failed during this time.")
 	flag.StringVar(&options.statsdServer, "statsd-server", "localhost:8125", "statsd server:port for sending metrics")
 	flag.IntVar(&options.statsInterval, "stats-interval", 30, "Interval in seconds for sending statsd metrics.")
-  flag.BoolVar(&options.version, "version", false, "version of the binary.")
+	flag.BoolVar(&options.version, "version", false, "version of the binary.")
 
 	envy.Parse("INFLUX")
 	flag.Parse()
@@ -108,8 +109,9 @@ func handleSignals(h chan bool) {
 }
 
 func displayVersion() {
-	fmt.Println("Version: ", Version)
-	fmt.Println("Build Time: ", BuildTime)
+	fmt.Println("Version: ", version)
+	fmt.Println("Build Time: ", date)
+	fmt.Println("Commit id: ", commit)
 	os.Exit(0)
 }
 
