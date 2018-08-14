@@ -59,7 +59,7 @@ func InfluxWriter(b *backends.BackendDest, db string, user string, password stri
 			select {
 			case b.RetryQueue <- message:
 			default:
-				log.Info("Retry queue for backend:%s might be at capacity.", b.URL)
+				log.Infof("Retry queue for backend:%s might be at capacity.", b.URL)
 			}
 		}
 	}

@@ -8,6 +8,7 @@ import (
 //"reflect"
 
 var customerAPIKey = []string{"7ba4e75a", "97dafb09"}
+var customerName = []string{"servicex", "servicey"}
 var customerInfluxDBName = []string{"telegraf1", "telegraf2"}
 var customerOutgoingQueueCap = []int{4096, 5000}
 var customerRetryQueueCap = []int{10, 4096}
@@ -18,6 +19,11 @@ func TestNewConfigs(t *testing.T) {
 	for i, c := range customerAPIKey {
 		if c != *gotConf.Customers[i].APIKey {
 			t.Errorf("APIKey does not match for customer%d. Got: %s, Expected: %s", i, *gotConf.Customers[i].APIKey, c)
+		}
+	}
+	for i, c := range customerName {
+		if c != *gotConf.Customers[i].Name {
+			t.Errorf("Service Name does not match for customer%d. Got: %s, Expected: %s", i, *gotConf.Customers[i].Name, c)
 		}
 	}
 	for i, c := range customerInfluxDBName {
@@ -59,6 +65,7 @@ func TestNewAPIKeyMap(t *testing.T) {
 	var expAPIKeyMap = map[string]APIKeyConfig{
 		"7ba4e75a": APIKeyConfig{
 			Dests:            genBackends([]string{"http://127.0.0.1:9086", "http://127.0.0.1:8086"}, 4096, 10),
+			Name:             "servicex",
 			InfluxDBName:     "telegraf1",
 			InfluxDBUserName: "user1",
 			InfluxDBPassword: "password1",
@@ -67,6 +74,7 @@ func TestNewAPIKeyMap(t *testing.T) {
 		},
 		"97dafb09": APIKeyConfig{
 			Dests:            genBackends([]string{"http://127.0.0.1:9086", "http://1.2.3.4:8086"}, 5000, 4096),
+			Name:             "servicey",
 			InfluxDBName:     "telegraf2",
 			InfluxDBUserName: "user2",
 			InfluxDBPassword: "password2",
@@ -79,6 +87,9 @@ func TestNewAPIKeyMap(t *testing.T) {
 	for _, v := range []string{"7ba4e75a", "97dafb09"} {
 		if expAPIKeyMap[v].InfluxDBName != gotAPIKeyMap[v].InfluxDBName {
 			t.Errorf("Influxdbname does not match. Got: %s, Expected: %s", gotAPIKeyMap[v].InfluxDBName, expAPIKeyMap[v].InfluxDBName)
+		}
+		if expAPIKeyMap[v].Name != gotAPIKeyMap[v].Name {
+			t.Errorf("Service name does not match. Got: %s, Expected: %s", gotAPIKeyMap[v].Name, expAPIKeyMap[v].Name)
 		}
 		if expAPIKeyMap[v].InfluxDBUserName != gotAPIKeyMap[v].InfluxDBUserName {
 			t.Errorf("Influxdb user does not match. Got: %s, Expected: %s", gotAPIKeyMap[v].InfluxDBUserName, expAPIKeyMap[v].InfluxDBUserName)
@@ -95,15 +106,16 @@ func TestNewAPIKeyMap(t *testing.T) {
 	}
 
 	// Auth from env
-	os.Setenv("username_7ba4e75a", "user1-shell")
-	os.Setenv("password_7ba4e75a", "password1-shell")
+	os.Setenv("username_servicex", "user1-shell")
+	os.Setenv("password_servicex", "password1-shell")
 
-	os.Setenv("username_97dafb09", "user2-shell")
-	os.Setenv("password_97dafb09", "password2-shell")
+	os.Setenv("username_servicey", "user2-shell")
+	os.Setenv("password_servicey", "password2-shell")
 
 	expAPIKeyMap = map[string]APIKeyConfig{
 		"7ba4e75a": APIKeyConfig{
 			Dests:            genBackends([]string{"http://127.0.0.1:9086", "http://127.0.0.1:8086"}, 4096, 10),
+			Name:             "servicex",
 			InfluxDBName:     "telegraf1",
 			InfluxDBUserName: "user1-shell",
 			InfluxDBPassword: "password1-shell",
@@ -112,6 +124,7 @@ func TestNewAPIKeyMap(t *testing.T) {
 		},
 		"97dafb09": APIKeyConfig{
 			Dests:            genBackends([]string{"http://127.0.0.1:9086", "http://1.2.3.4:8086"}, 5000, 4096),
+			Name:             "servicey",
 			InfluxDBName:     "telegraf2",
 			InfluxDBUserName: "user2-shell",
 			InfluxDBPassword: "password2-shell",
@@ -124,6 +137,9 @@ func TestNewAPIKeyMap(t *testing.T) {
 	for _, v := range []string{"7ba4e75a", "97dafb09"} {
 		if expAPIKeyMap[v].InfluxDBName != gotAPIKeyMap[v].InfluxDBName {
 			t.Errorf("Influxdbname does not match. Got: %s, Expected: %s", gotAPIKeyMap[v].InfluxDBName, expAPIKeyMap[v].InfluxDBName)
+		}
+		if expAPIKeyMap[v].Name != gotAPIKeyMap[v].Name {
+			t.Errorf("Service name does not match. Got: %s, Expected: %s", gotAPIKeyMap[v].Name, expAPIKeyMap[v].Name)
 		}
 		if expAPIKeyMap[v].InfluxDBUserName != gotAPIKeyMap[v].InfluxDBUserName {
 			t.Errorf("Influxdb user does not match. Got: %s, Expected: %s", gotAPIKeyMap[v].InfluxDBUserName, expAPIKeyMap[v].InfluxDBUserName)

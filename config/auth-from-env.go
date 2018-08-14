@@ -28,8 +28,9 @@ import (
 
 //AuthFromENV implements Authenticator and enables environment variables based auth
 /*
-The environment variable for the username should be of the format username_<api key>
-The environment variable for the password should be of the format password_<api key>
+The environment variable for the username should be of the format username_<name>
+The environment variable for the password should be of the format password_<name>
+<name> is the customer 'Name' attribute in the toml.
 Example
 export username_abcd = "user1"
 export password_abcd = "password1"
@@ -41,8 +42,8 @@ func newAuthFromENV() authFromENV {
 	return authFromENV{}
 }
 
-func (a authFromENV) Creds(apiKey string) (string, string) {
-	u := os.Getenv(fmt.Sprintf("username_%s", apiKey))
-	p := os.Getenv(fmt.Sprintf("password_%s", apiKey))
+func (a authFromENV) Creds(name string) (string, string) {
+	u := os.Getenv(fmt.Sprintf("username_%s", name))
+	p := os.Getenv(fmt.Sprintf("password_%s", name))
 	return u, p
 }

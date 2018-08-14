@@ -48,6 +48,7 @@ func newErr(f string) *errMandatoryField {
 //Config is the toml config
 type Config struct {
 	APIKey           *string   `toml:"api_key"`
+	Name             *string   `toml:"name"`
 	InfluxHosts      *[]string `toml:"influx_hosts"`
 	InfluxDBName     *string   `toml:"influx_db_name"`
 	OutgoingQueueCap *int      `toml:"outgoing_queue_cap"`
@@ -90,6 +91,7 @@ func (c *Configs) LogConfig() string {
 	for _, r := range c.Customers {
 		buff.WriteString(fmt.Sprintf(
 			`ApiKey = %s
+Name = %s
 InfluxHosts = %s
 InfluxDB = %v
 OutgoingQueueCap = %v
@@ -97,6 +99,7 @@ RetryQueueCap = %v
 Auth.UserName = %v
 Auth.Password = %v`,
 			Mask(*r.APIKey, 4),
+			*r.Name,
 			*r.InfluxHosts,
 			*r.InfluxDBName,
 			*r.OutgoingQueueCap,
@@ -125,6 +128,10 @@ func (c *Configs) checkConfig() (*Configs, error) {
 			return nil, newErr("InfluxDBName")
 		}
 
+		if v.Name == nil {
+			return nil, newErr("Service Name")
+		}
+
 		if v.OutgoingQueueCap == nil {
 			o := 4096
 			v.OutgoingQueueCap = &o
@@ -146,6 +153,7 @@ func (c *Configs) checkConfig() (*Configs, error) {
 // APIKeyConfig contains the backend pool.
 type APIKeyConfig struct {
 	Dests            map[string]*backends.BackendDest
+	Name             string // service name
 	InfluxDBName     string // database name in the backends
 	InfluxDBUserName string // db user name
 	InfluxDBPassword string // db password
@@ -162,6 +170,7 @@ func NewAPIKeyMap(r []Config, authEnabled bool, authMode string) (APIKeyMap, err
 	for _, v := range r {
 		s := APIKeyConfig{}
 		s.InfluxDBName = *v.InfluxDBName
+		s.Name = *v.Name
 		s.OutgoingQueueCap = *v.OutgoingQueueCap
 		s.RetryQueueCap = *v.RetryQueueCap
 
@@ -175,7 +184,7 @@ func NewAPIKeyMap(r []Config, authEnabled bool, authMode string) (APIKeyMap, err
 			if err != nil {
 				return nil, err
 			}
-			s.InfluxDBUserName, s.InfluxDBPassword = authenticator.Creds(*v.APIKey)
+			s.InfluxDBUserName, s.InfluxDBPassword = authenticator.Creds(*v.Name)
 		}
 
 		s.Dests = genBackends(*v.InfluxHosts, *v.OutgoingQueueCap, *v.RetryQueueCap)

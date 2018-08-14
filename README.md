@@ -6,7 +6,7 @@ Installation
 ##### To install the binary:
 Go to the releases page and select the appropriate binary for your platform.
 
-##### To build from source follow the steps below: 
+##### To build from source follow the steps below:
 
 ```sh
 Install glide from http://glide.sh/.
@@ -26,6 +26,7 @@ $ make influxdb-router
 ```
 # You can configure multiple customers.
 [[customers]]
+  # name must be unique across customers
   name = "servicex"
   email = "user1@email.com"
   # api key should not have !, *, or - character. This is the value of the telegraf header (default header name is 'Service-API-Key')
@@ -59,11 +60,12 @@ $./influxdb-router -config_file config.toml -api-listen-http-port 8090 -listen-h
 $./influxdb-router -auth-enabled -auth-mode from-config -config_file config.toml -api-listen-http-port 8090 -listen-http-port 8080
 ```
 
-3. **config.toml without the InfluxDB creds but in env and with InfluxDB authentication enabled in the backends. You can set the creds in environment in the following format.**
+3. **config.toml with the InfluxDB creds not in config but in env and with InfluxDB authentication enabled in the backends. You can set the creds in environment in the following format.**
 
 ```
-$ export username_<api_key> = "user1"
-$ export password_<api_key> = "password1"
+$ export username_<name> = "user1"
+$ export password_<name> = "password1"
+<name> is the 'Name' attribute in the toml.
 
 
 $ ./influxdb-router -auth-enabled -auth-mode from-env -config_file config.toml -api-listen-http-port 8090 -listen-http-port 8080
@@ -72,7 +74,7 @@ $ ./influxdb-router -auth-enabled -auth-mode from-env -config_file config.toml -
 4. **With SSL**
 
 ```
-$ ./influxdb-router -secure -config_file co nfig.toml -api-listen-http-port 8090 -listen-https-port 8080 -ssl-server-cert <path to server cert> -ssl-server-key <path to server key>
+$ ./influxdb-router -secure -config_file config.toml -api-listen-http-port 8090 -listen-https-port 8080 -ssl-server-cert <path to server cert> -ssl-server-key <path to server key>
 ```
 5. **With SSL and with ssl client cert authentication enabled (telegraf needs to be configured with client certs)**
 
@@ -82,4 +84,3 @@ $ ./influxdb-router -secure -ssl-client-cert-auth -config_file config.toml -api-
 
 ### Example client side config (telegraf configuration)
 ![alt text](images/telegraf.png "Telegraf configuration")
-
