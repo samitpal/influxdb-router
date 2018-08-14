@@ -52,12 +52,12 @@ $ make influxdb-router
 ### Influxdb-router Usage
 1. **Without InfluxDB authentication enabled.**
 ```
-$./influxdb-router -config_file config.toml -api-listen-http-port 8090 -listen-http-port 8080
+$./influxdb-router -config_file config.toml -api-listen-http-port 8080 -listen-http-port 8090
 ```
 
 2. **With the InfluxDB creds in config.toml and with InfluxDB authentication enabled in the backends.**
 ```
-$./influxdb-router -auth-enabled -auth-mode from-config -config_file config.toml -api-listen-http-port 8090 -listen-http-port 8080
+$./influxdb-router -auth-enabled -auth-mode from-config -config_file config.toml -api-listen-http-port 8080 -listen-http-port 8090
 ```
 
 3. **config.toml with the InfluxDB creds not in config but in env and with InfluxDB authentication enabled in the backends. You can set the creds in environment in the following format.**
@@ -74,12 +74,12 @@ $ ./influxdb-router -auth-enabled -auth-mode from-env -config_file config.toml -
 4. **With SSL**
 
 ```
-$ ./influxdb-router -secure -config_file config.toml -api-listen-http-port 8090 -listen-https-port 8080 -ssl-server-cert <path to server cert> -ssl-server-key <path to server key>
+$ ./influxdb-router -secure -config_file config.toml -api-listen-http-port 8080 -listen-https-port 8443 -ssl-server-cert <path to server cert> -ssl-server-key <path to server key>
 ```
 5. **With SSL and with ssl client cert authentication enabled (telegraf needs to be configured with client certs)**
 
 ```
-$ ./influxdb-router -secure -ssl-client-cert-auth -config_file config.toml -api-listen-http-port 8090 -listen-https-port 8080 -ssl-ca-server-cert <path to CA cert> -ssl-server-cert <path to server cert> -ssl-server-key <path to server key>
+$ ./influxdb-router -secure -ssl-client-cert-auth -config_file config.toml -api-listen-http-port 8080 -listen-https-port 8443 -ssl-ca-server-cert <path to CA cert> -ssl-server-cert <path to server cert> -ssl-server-key <path to server key>
 ```
 
 ### Example client side config (telegraf configuration)
