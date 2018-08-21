@@ -9,6 +9,13 @@ builds:
       - linux
     goarch:
       - amd64
+dockers:
+  - 
+    image: samitpal/influxdb-router
+    goos: linux
+    goarch: amd64
+    binary: influxdb-router
+  
 # Archive customization
 archive:
   format: tar.gz

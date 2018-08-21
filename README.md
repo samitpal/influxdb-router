@@ -41,9 +41,10 @@ $ make influxdb-router
   # list of InfluxDB hosts.
   influx_hosts = ["http://127.0.0.1:9086", "http://127.0.0.1:8086"]
   # The auth section needs to come at the end. This should be populated only if you enabled auth in influx-router
-  # and set auth-mode to 'from-config'
+  # and set auth-mode to 'from-config'. Additionally you need to enable authentication by setting the 'auth-enabled' option
+  # to the in the [http] section of the InfluxDB config. 
   [customers.auth]
-      # influxdb user
+      # influxdb user. Yo need to grant privilege to user 'user1' to database 'telegraf1'
       username = "user1"
       # influxdb password for user user1
       password = "password1"
