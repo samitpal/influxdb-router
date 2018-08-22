@@ -5,7 +5,7 @@
 INFLUXDB-ROUTER_PKG := github.com/samitpal/influxdb-router
 
 # Change the version with the git tag
-INFLUXDB-ROUTER_VERSION := 0.1.2
+INFLUXDB-ROUTER_VERSION := 0.1.3
 
 BUILDTIME := $(shell date +%FT%T%z)
 GIT_COMMIT_ID := $(shell git rev-parse HEAD)
