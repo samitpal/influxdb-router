@@ -29,7 +29,7 @@ $ make influxdb-router
   # name must be unique across customers
   name = "servicex"
   email = "user1@email.com"
-  # api key should not have !, *, or - character. This is the value of the telegraf header (default header name is 'Service-API-Key')
+  # api key. Should be a long random string. This is the value of the telegraf header (default header name is 'Service-API-Key')
   api_key = "7ba4e75a"
   # Name of the influxdb database where the metrics for this customer should be stored.
   influx_db_name = "telegraf1"
